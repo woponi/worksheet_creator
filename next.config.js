@@ -2,7 +2,6 @@
 
 const isGithubActions = process.env.GITHUB_ACTIONS || false
 
-const repo = 'worksheet_creator'
 let assetPrefix = ''
 let basePath = ''
 
