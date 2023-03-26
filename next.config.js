@@ -6,6 +6,7 @@ const repo = 'worksheet_creator'
 let assetPrefix = ''
 let basePath = ''
 
+
 if (isGithubActions) {
   // trim off `<owner>/`
   const repo = process.env.GITHUB_REPOSITORY.replace(/.*?\//, '')
