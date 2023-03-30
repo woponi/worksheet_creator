@@ -15,6 +15,7 @@ import TextField from '@mui/material/TextField';
 import {alpha, styled} from '@mui/material/styles';
 import WSTable from '../../components/WSTable';
 import {GetStaticProps} from 'next';
+import CopyButton from '../../components/CopyButton';
 
 const inter = Inter({subsets: ['latin']})
 
@@ -32,16 +33,6 @@ const Home: React.FC<HomeProps> = () => {
 
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const handleCopyClick = () => {
-        if (tableRef.current) {
-            const range = document.createRange();
-            range.selectNode(tableRef.current);
-            window.getSelection()?.removeAllRanges();
-            window.getSelection()?.addRange(range);
-            document.execCommand('copy');
-            window.getSelection()?.removeAllRanges();
-        }
-    };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(Number(event.target.value));
@@ -55,8 +46,7 @@ const Home: React.FC<HomeProps> = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                console.log("Gov HK API URL = ", 'https://cors-anywhere.herokuapp.com/https://www.1823.gov.hk/common/ical/en.json');
-                const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.1823.gov.hk/common/ical/en.json');
+                const response = await fetch('https://proxy.vfpoc.cc/https://www.1823.gov.hk/common/ical/en.json');
                 const data = await response.json();
                 console.log('data = ', data);
                 setData(data.vcalendar[0].vevent);
@@ -79,33 +69,19 @@ const Home: React.FC<HomeProps> = () => {
             <main className={styles.main}>
                 <div className={styles.description}>
                     <TextField id="month" color="warning" label="Month of the Worksheet" variant="standard"/>
-                    <div>
-                        <a
-                            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            By{' '}
-                            <Image
-                                src="/vercel.svg"
-                                alt="Vercel Logo"
-                                className={styles.vercelLogo}
-                                width={100}
-                                height={24}
-                                priority
-                            />
-                        </a>
-                    </div>
                 </div>
-                <button onClick={handleCopyClick}>Copy Table</button>
+                <div>Stupid Timesheet</div>
                 <label htmlFor="input-field">Current Month:</label>
                 <input type="text" id="input-field" value={inputValue} onChange={handleInputChange}/>
                 <button onClick={handleButtonClick}>Submit</button>
-                {data ? (
-                    <WSTable month={curMonth} desc={inputValue} data={data}/>
-                ) : (
+                {data ?
+                    <>
+                        <CopyButton componentToCopy={<WSTable month={curMonth} desc={inputValue} data={data}/>}/>
+                    </>
+
+                 : 
                     <p>Loading data...</p>
-                )}
+                }
 
 
                 <div className={styles.grid}>
@@ -116,17 +92,6 @@ const Home: React.FC<HomeProps> = () => {
 }
 
 
-// Home.getInitialProps = async () => {
-//   const response = await fetch('https://www.1823.gov.hk/common/ical/en.json');
-//   const data = await response.json();
-//
-//   return { data };
-// };
-//
-// export const getStaticProps: GetStaticProps = async () => {
-//     const response = await fetch('https://www.1823.gov.hk/common/ical/en.json');
-//     const data = await response.json();
-//     return {props: {data}};
-// };
+
 
 export default Home

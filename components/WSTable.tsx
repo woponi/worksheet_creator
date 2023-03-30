@@ -1,8 +1,9 @@
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import React, {forwardRef} from "react";
 
 interface WSTableProps {
-    totalHours?: string, timeStart?: string,
+    totalHours?: string,
+    timeStart?: string,
     timeEnd?: string,
     month?: number,
     desc?: number,
@@ -40,7 +41,7 @@ const formatDayOfWeek = (date: Date) => {
     }).format(date);
 };
 
-const WSTable : React.FC <WSTableProps> = (
+const WSTable: React.FC<WSTableProps> = (
     {
         totalHours = '9',
         timeStart = '9:00',
@@ -50,7 +51,18 @@ const WSTable : React.FC <WSTableProps> = (
         data: data
     }) => {
 
-    console.log("data updated", !data && data)
+    console.log("data updated", data[0]['dtstart'][0])
+    let holidays: any[] = [];
+
+    for (let i = 0; i < data.length; i++) {
+        let date = data[i]['dtstart'][0];
+        let holiday: {} = {
+            date: `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`,
+            name: data[i]['summary']
+        }
+        holidays.push(holiday);
+    }
+
     const dates = getCurrentMonthDates(month);
     //const [totalHours, setTotalHours] = React.useState(0);
 
@@ -58,33 +70,60 @@ const WSTable : React.FC <WSTableProps> = (
         <TableContainer component={Paper}>
             <Table>
                 <TableHead>
-                <TableRow>
-                    <TableCell>Date ({month})</TableCell>
-                    <TableCell>Time Start</TableCell>
-                    <TableCell>Time End</TableCell>
-                    <TableCell>Total Hours</TableCell>
-                    <TableCell>Job Description</TableCell>
-                    <TableCell>Remark (e.g. Leave)</TableCell>
-                </TableRow>
+                    <TableRow>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Time Start</TableCell>
+                        <TableCell>Time End</TableCell>
+                        <TableCell>Total Hours</TableCell>
+                        <TableCell>Job Description</TableCell>
+                        <TableCell>Remark (e.g. Leave)</TableCell>
+                    </TableRow>
                 </TableHead>
                 <TableBody>
-                {dates.map((date) => {
-                    let hoilday = (formatDayOfWeek(date) === 'Saturday' || formatDayOfWeek(date) === 'Sunday');
-                    return (
-                        <TableRow key={date.toString()}>
-                            <TableCell>{formatDate(date)}</TableCell>
-                            <TableCell>{!hoilday && timeStart}</TableCell>
-                            <TableCell>{!hoilday && timeEnd}</TableCell>
-                            <TableCell>{!hoilday && totalHours}</TableCell>
-                            <TableCell>{data[0]['dtstart']}</TableCell>
-                            <TableCell>{hoilday && formatDayOfWeek(date)}</TableCell>
-                        </TableRow>
-                    )
-                })}
+                    {dates.map((date) => {
+                        //let isoDateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Hong_Kong' }).slice(0, 10);
+                        const month = date.getMonth() + 1;
+                        const day = date.getDate();
+                        const year = date.getFullYear();
+
+                        const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                        const matchHoliday = isHoliday(formattedDate, holidays);
+
+                        let weekend = (formatDayOfWeek(date) === 'Saturday' || formatDayOfWeek(date) === 'Sunday');
+                        return <>
+
+                            <TableRow key={date.toString()}>
+                                <TableCell>{formatDate(date)}</TableCell>
+                                {
+                                    (!matchHoliday) ? <>
+                                            <TableCell>{!weekend && timeStart}</TableCell>
+                                        <TableCell>{!weekend && timeEnd}</TableCell>
+                                    <TableCell>{!weekend && totalHours}</TableCell>
+                                    <TableCell>{matchHoliday}</TableCell>
+                                    <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
+                                    </> :
+                                        <>
+                                        <TableCell></TableCell>
+                                        <TableCell></TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell>{matchHoliday['name']}</TableCell>
+                                        </>
+
+                                }
+                            </TableRow>
+
+                        </>
+                    })}
                 </TableBody>
             </Table>
         </TableContainer>
     )
+}
+
+function isHoliday(dateString:string, holidayList:any[]) {
+  const matchingHoliday = holidayList.find(holiday => holiday['date'] === dateString);
+  return matchingHoliday || false;
 }
 
 export default WSTable;
