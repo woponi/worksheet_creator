@@ -67,15 +67,15 @@ const WSTable: React.FC<WSTableProps> = (
     //const [totalHours, setTotalHours] = React.useState(0);
 
     return (
-        <TableContainer component={Paper}>
-            <Table>
+        <TableContainer component={Paper} >
+            <Table >
                 <TableHead>
                     <TableRow>
                         <TableCell>Date</TableCell>
                         <TableCell>Time Start</TableCell>
                         <TableCell>Time End</TableCell>
                         <TableCell>Total Hours</TableCell>
-                        <TableCell>Job Description</TableCell>
+                        <TableCell colSpan={2}>Job Description</TableCell>
                         <TableCell>Remark (e.g. Leave)</TableCell>
                     </TableRow>
                 </TableHead>
@@ -97,17 +97,17 @@ const WSTable: React.FC<WSTableProps> = (
                                 {
                                     (!matchHoliday) ? <>
                                             <TableCell>{!weekend && timeStart}</TableCell>
-                                        <TableCell>{!weekend && timeEnd}</TableCell>
-                                    <TableCell>{!weekend && totalHours}</TableCell>
-                                    <TableCell>{matchHoliday}</TableCell>
-                                    <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
-                                    </> :
+                                            <TableCell>{!weekend && timeEnd}</TableCell>
+                                            <TableCell>{!weekend && totalHours}</TableCell>
+                                            <TableCell colSpan={2}></TableCell>
+                                            <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
+                                        </> :
                                         <>
-                                        <TableCell></TableCell>
-                                        <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell>{matchHoliday['name']}</TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell colSpan={2}></TableCell>
+                                            <TableCell>{matchHoliday['name']}</TableCell>
                                         </>
 
                                 }
@@ -121,9 +121,9 @@ const WSTable: React.FC<WSTableProps> = (
     )
 }
 
-function isHoliday(dateString:string, holidayList:any[]) {
-  const matchingHoliday = holidayList.find(holiday => holiday['date'] === dateString);
-  return matchingHoliday || false;
+function isHoliday(dateString: string, holidayList: any[]) {
+    const matchingHoliday = holidayList.find(holiday => holiday['date'] === dateString);
+    return matchingHoliday || false;
 }
 
 export default WSTable;
