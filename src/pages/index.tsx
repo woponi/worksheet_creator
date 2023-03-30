@@ -23,9 +23,12 @@ interface HomeProps {
     initialData: any; // Change "any" to the type of your data
 }
 
-const Home: React.FC<HomeProps> = ({initialData}) => {
-    const [data, setData] = useState(initialData);
-    const [inputValue, setInputValue] = useState('');
+const Home: React.FC<HomeProps> = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const [data, setData] = useState(null);
+    const [curMonth, setCurMonth] = useState(currentMonth);
+    const [inputValue, setInputValue] = useState(currentMonth + 1);
 
     const tableRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +44,8 @@ const Home: React.FC<HomeProps> = ({initialData}) => {
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value);
+        setInputValue(Number(event.target.value));
+        setCurMonth(Number(event.target.value) - 1);
     };
 
     const handleButtonClick = () => {
@@ -51,11 +55,11 @@ const Home: React.FC<HomeProps> = ({initialData}) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                console.log("Gov HK API URL = ", 'https://www.1823.gov.hk/common/ical/en.json');
-                const response = await fetch('https://www.1823.gov.hk/common/ical/en.json');
+                console.log("Gov HK API URL = ", 'https://cors-anywhere.herokuapp.com/https://www.1823.gov.hk/common/ical/en.json');
+                const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.1823.gov.hk/common/ical/en.json');
                 const data = await response.json();
                 console.log('data = ', data);
-                setData(data);
+                setData(data.vcalendar[0].vevent);
             } catch (e) {
                 console.log('error = ', e);
             }
@@ -94,10 +98,15 @@ const Home: React.FC<HomeProps> = ({initialData}) => {
                     </div>
                 </div>
                 <button onClick={handleCopyClick}>Copy Table</button>
-                <label htmlFor="input-field">Input Value:</label>
+                <label htmlFor="input-field">Current Month:</label>
                 <input type="text" id="input-field" value={inputValue} onChange={handleInputChange}/>
                 <button onClick={handleButtonClick}>Submit</button>
-                <WSTable desc={inputValue}/>
+                {data ? (
+                    <WSTable month={curMonth} desc={inputValue} data={data}/>
+                ) : (
+                    <p>Loading data...</p>
+                )}
+
 
                 <div className={styles.grid}>
                 </div>
@@ -113,11 +122,11 @@ const Home: React.FC<HomeProps> = ({initialData}) => {
 //
 //   return { data };
 // };
-
-export const getStaticProps: GetStaticProps = async () => {
-    const response = await fetch('https://www.1823.gov.hk/common/ical/en.json');
-    const data = await response.json();
-    return {props: {data}};
-};
+//
+// export const getStaticProps: GetStaticProps = async () => {
+//     const response = await fetch('https://www.1823.gov.hk/common/ical/en.json');
+//     const data = await response.json();
+//     return {props: {data}};
+// };
 
 export default Home
