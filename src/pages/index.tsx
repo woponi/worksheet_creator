@@ -18,6 +18,8 @@ import {GetStaticProps} from 'next';
 import CopyButton from '../../components/CopyButton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import ReactGA from 'react-ga';
+import { useRouter } from 'next/router';
 
 const inter = Inter({subsets: ['latin']})
 
@@ -35,6 +37,12 @@ const Home: React.FC<HomeProps> = () => {
     const [inputValue, setInputValue] = useState(currentMonth + 1);
 
     const tableRef = useRef<HTMLDivElement>(null);
+
+    const router = useRouter();
+
+    useEffect(() => {
+        ReactGA.pageview(router.pathname);
+    }, [router.pathname]);
 
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +80,11 @@ const Home: React.FC<HomeProps> = () => {
             <main className={styles.main}>
                 <Typography variant="h3" gutterBottom>
                     VF Timesheet generator for HKG
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                    How to use:<br/>
+                    1. Change the month if not for the current month<br/>
+                    2. Copy the table and paste it into the timesheet date header<br/>
                 </Typography>
                 {data ?
                     <>
