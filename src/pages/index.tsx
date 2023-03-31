@@ -84,7 +84,7 @@ const Home: React.FC<HomeProps> = () => {
                 <Typography variant="h6" gutterBottom>
                     How to use:<br/>
                     1. Change the month if not for the current month<br/>
-                    2. Copy the table and paste it into the timesheet date header<br/>
+                    2. Click the Copy button and paste it to the timesheet date header<br/>
                 </Typography>
                 {data ?
                     <>
