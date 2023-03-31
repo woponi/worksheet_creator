@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import ReactGA from 'react-ga';
 import { useRouter } from 'next/router';
+import { initGA } from '../../utils/analytics';
 
 const inter = Inter({subsets: ['latin']})
 
@@ -40,7 +41,10 @@ const Home: React.FC<HomeProps> = () => {
 
     const router = useRouter();
 
+
     useEffect(() => {
+        initGA();
+        console.log("path name = ", router.pathname);
         ReactGA.pageview(router.pathname);
     }, [router.pathname]);
 
