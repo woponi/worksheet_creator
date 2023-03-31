@@ -67,8 +67,8 @@ const WSTable: React.FC<WSTableProps> = (
     //const [totalHours, setTotalHours] = React.useState(0);
 
     return (
-        <TableContainer component={Paper} >
-            <Table >
+        <TableContainer component={Paper}>
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell>Date</TableCell>
@@ -80,40 +80,61 @@ const WSTable: React.FC<WSTableProps> = (
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {dates.map((date) => {
-                        //let isoDateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Hong_Kong' }).slice(0, 10);
-                        const month = date.getMonth() + 1;
-                        const day = date.getDate();
-                        const year = date.getFullYear();
+                    {[...Array(31)].map((e, i) => {
+                        if (dates[i] !== undefined) {
+                            const date = dates[i]
+                            //let isoDateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Hong_Kong' }).slice(0, 10);
+                            const month = date.getMonth() + 1;
+                            const day = date.getDate();
+                            const year = date.getFullYear();
+                            const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
-                        const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                        const matchHoliday = isHoliday(formattedDate, holidays);
+                            const matchHoliday = isHoliday(formattedDate, holidays);
 
-                        let weekend = (formatDayOfWeek(date) === 'Saturday' || formatDayOfWeek(date) === 'Sunday');
-                        return <>
+                            let weekend = (formatDayOfWeek(date) === 'Saturday' || formatDayOfWeek(date) === 'Sunday');
+                            return <>
 
-                            <TableRow key={date.toString()}>
-                                <TableCell>{formatDate(date)}</TableCell>
-                                {
-                                    (!matchHoliday) ? <>
-                                            <TableCell>{!weekend && timeStart}</TableCell>
-                                            <TableCell>{!weekend && timeEnd}</TableCell>
-                                            <TableCell>{!weekend && totalHours}</TableCell>
-                                            <TableCell colSpan={2}></TableCell>
-                                            <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
-                                        </> :
+                                <TableRow key={date.toString()}>
+                                    <TableCell>{formatDate(date)}</TableCell>
+                                    {
+                                        (!matchHoliday) ? <>
+                                                <TableCell>{!weekend && timeStart}</TableCell>
+                                                <TableCell>{!weekend && timeEnd}</TableCell>
+                                                <TableCell>{!weekend && totalHours}</TableCell>
+                                                <TableCell colSpan={2}></TableCell>
+                                                <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
+                                            </> :
+                                            <>
+                                                <TableCell></TableCell>
+                                                <TableCell></TableCell>
+                                                <TableCell></TableCell>
+                                                <TableCell colSpan={2}></TableCell>
+                                                <TableCell>{matchHoliday['name']}</TableCell>
+                                            </>
+
+                                    }
+                                </TableRow>
+
+                            </>
+                        } else {
+                            return <>
+
+                                <TableRow key={i}>
+                                    <TableCell>{i + 1}</TableCell>
+                                    {
                                         <>
                                             <TableCell></TableCell>
                                             <TableCell></TableCell>
                                             <TableCell></TableCell>
                                             <TableCell colSpan={2}></TableCell>
-                                            <TableCell>{matchHoliday['name']}</TableCell>
+                                            <TableCell></TableCell>
                                         </>
+                                    }
+                                </TableRow>
 
-                                }
-                            </TableRow>
+                            </>
+                        }
 
-                        </>
                     })}
                 </TableBody>
             </Table>

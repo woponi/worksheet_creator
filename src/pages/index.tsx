@@ -23,8 +23,6 @@ import ReactGA from "react-ga4";
 import { useRouter } from 'next/router';
 
 
-const inter = Inter({subsets: ['latin']})
-
 // Create a react input component that accepts a column to enter the month and year and displays the dates of the month in a table.
 interface HomeProps {
     initialData: any; // Change "any" to the type of your data
@@ -98,7 +96,12 @@ const Home: React.FC<HomeProps> = () => {
                     <p>Loading data...</p>
                 }
                 <div className={styles.grid}>
+
                 </div>
+                
+                <footer className={styles.footer}>
+                    Powered by <a target={'_blank'} href={'https://github.com/woponi/worksheet_creator/'}>Pong Github</a> <br/>HK Public holiday data from <a href="https://www.1823.gov.hk/common/ical/en.json" target="_blank">1823.gov.hk</a>
+                </footer>
             </main>
         </>
     )

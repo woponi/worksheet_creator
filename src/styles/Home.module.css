@@ -11,6 +11,11 @@
   color: white;
 }
 
+.footer{
+  margin-top: 20px;
+  text-align: center;
+}
+
 .description {
   display: inherit;
   justify-content: inherit;
