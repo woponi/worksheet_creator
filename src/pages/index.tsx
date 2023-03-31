@@ -18,9 +18,10 @@ import {GetStaticProps} from 'next';
 import CopyButton from '../../components/CopyButton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import ReactGA from 'react-ga';
+import ReactGA from "react-ga4";
+
 import { useRouter } from 'next/router';
-import { initGA } from '../../utils/analytics';
+
 
 const inter = Inter({subsets: ['latin']})
 
@@ -42,12 +43,8 @@ const Home: React.FC<HomeProps> = () => {
     const router = useRouter();
 
 
-    useEffect(() => {
-        initGA();
-        console.log("path name = ", router.pathname);
-        ReactGA.pageview(router.pathname);
-    }, [router.pathname]);
-
+    ReactGA.initialize("G-MQ19L50V11");
+    ReactGA.send({ hitType: "pageview", page: router.pathname, title: "Stupid timesheet" });
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(Number(event.target.value));
