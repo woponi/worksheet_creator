@@ -56,7 +56,7 @@ const Home: React.FC<HomeProps> = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch('https://proxy.vfpoc.cc/https://www.1823.gov.hk/common/ical/en.json');
+                const response = await fetch('https://jolly-block-1d9c.woponi.workers.dev/');
                 const data = await response.json();
                 console.log('data = ', data);
                 setData(data.vcalendar[0].vevent);
