@@ -63,7 +63,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
-          retention-days: 1
 
   # Deployment job
   deploy:
@@ -75,8 +74,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
-          folder: out
+        uses: actions/deploy-pages@v4
