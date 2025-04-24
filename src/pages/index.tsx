@@ -19,38 +19,35 @@ import CopyButton from '../../components/CopyButton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import ReactGA from "react-ga4";
-
 import { useRouter } from 'next/router';
-
 
 // Create a react input component that accepts a column to enter the month and year and displays the dates of the month in a table.
 interface HomeProps {
     initialData: any; // Change "any" to the type of your data
 }
 
-
 const Home: React.FC<HomeProps> = () => {
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
     const [data, setData] = useState(null);
-    const [curMonth, setCurMonth] = useState(currentMonth);
-    const [inputValue, setInputValue] = useState(currentMonth + 1);
+    const [startDate, setStartDate] = useState<Date>(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
+    const [endDate, setEndDate] = useState<Date>(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0));
 
     const tableRef = useRef<HTMLDivElement>(null);
-
     const router = useRouter();
-
 
     ReactGA.initialize("G-MQ19L50V11");
     ReactGA.send({ hitType: "pageview", page: router.pathname, title: "Stupid timesheet" });
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(Number(event.target.value));
-        setCurMonth(Number(event.target.value) - 1);
+    const formatDateForInput = (date: Date) => {
+        return date.toISOString().split('T')[0];
     };
 
-    const handleButtonClick = () => {
-        // Call API or perform other action here
+    const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setStartDate(new Date(event.target.value));
+    };
+
+    const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEndDate(new Date(event.target.value));
     };
 
     useEffect(() => {
@@ -82,15 +79,40 @@ const Home: React.FC<HomeProps> = () => {
                 </Typography>
                 <Typography variant="h6" gutterBottom>
                     How to use:<br/>
-                    1. Change the month if not for the current month<br/>
+                    1. Select the start and end dates for your timesheet period<br/>
                     2. Click the Copy button and paste it to the timesheet date header<br/>
                 </Typography>
+                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                        label="Start Date"
+                        type="date"
+                        value={formatDateForInput(startDate)}
+                        onChange={handleStartDateChange}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                    <TextField
+                        label="End Date"
+                        type="date"
+                        value={formatDateForInput(endDate)}
+                        onChange={handleEndDateChange}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                </Box>
                 {data ?
                     <>
                         <CopyButton
-                            inputValue={inputValue}
-                            handleInputChange={handleInputChange}
-                            componentToCopy={<WSTable month={curMonth} desc={inputValue} data={data}/>}/>
+                            componentToCopy={
+                                <WSTable 
+                                    data={data}
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                />
+                            }
+                        />
                     </>
                     :
                     <p>Loading data...</p>
@@ -106,6 +128,5 @@ const Home: React.FC<HomeProps> = () => {
         </>
     )
 }
-
 
 export default Home

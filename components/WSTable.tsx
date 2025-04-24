@@ -5,25 +5,20 @@ interface WSTableProps {
     totalHours?: string,
     timeStart?: string,
     timeEnd?: string,
-    month?: number,
-    desc?: number,
-    data?: any
+    data?: any,
+    startDate: Date,
+    endDate: Date
 }
 
-const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month + 1, 0).getDate();
-};
-
-const getCurrentMonthDates = (month: number) => {
-    const currentDate = new Date();
-    const currentMonth = month;
-    const currentYear = currentDate.getFullYear();
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-
+const getDateRange = (startDate: Date, endDate: Date) => {
     const dates = [];
-    for (let i = 1; i <= daysInMonth; i++) {
-        dates.push(new Date(currentYear, currentMonth, i));
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
     }
+    
     return dates;
 };
 
@@ -46,12 +41,11 @@ const WSTable: React.FC<WSTableProps> = (
         totalHours = '9',
         timeStart = '9:00',
         timeEnd = '18:00',
-        month = 1,
-        desc = '',
-        data: data
+        data = [],
+        startDate,
+        endDate
     }) => {
 
-    console.log("data updated", data[0]['dtstart'][0])
     let holidays: any[] = [];
 
     for (let i = 0; i < data.length; i++) {
@@ -63,8 +57,7 @@ const WSTable: React.FC<WSTableProps> = (
         holidays.push(holiday);
     }
 
-    const dates = getCurrentMonthDates(month);
-    //const [totalHours, setTotalHours] = React.useState(0);
+    const dates = getDateRange(startDate, endDate);
 
     return (
         <TableContainer component={Paper}>
@@ -80,61 +73,37 @@ const WSTable: React.FC<WSTableProps> = (
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {[...Array(31)].map((e, i) => {
-                        if (dates[i] !== undefined) {
-                            const date = dates[i]
-                            //let isoDateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Hong_Kong' }).slice(0, 10);
-                            const month = date.getMonth() + 1;
-                            const day = date.getDate();
-                            const year = date.getFullYear();
-                            const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    {dates.map((date) => {
+                        const month = date.getMonth() + 1;
+                        const day = date.getDate();
+                        const year = date.getFullYear();
+                        const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
-                            const matchHoliday = isHoliday(formattedDate, holidays);
+                        const matchHoliday = isHoliday(formattedDate, holidays);
+                        let weekend = (formatDayOfWeek(date) === 'Saturday' || formatDayOfWeek(date) === 'Sunday');
 
-                            let weekend = (formatDayOfWeek(date) === 'Saturday' || formatDayOfWeek(date) === 'Sunday');
-                            return <>
-
-                                <TableRow key={date.toString()}>
-                                    <TableCell>{formatDate(date)}</TableCell>
-                                    {
-                                        (!matchHoliday) ? <>
-                                                <TableCell>{!weekend && timeStart}</TableCell>
-                                                <TableCell>{!weekend && timeEnd}</TableCell>
-                                                <TableCell>{!weekend && totalHours}</TableCell>
-                                                <TableCell colSpan={2}></TableCell>
-                                                <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
-                                            </> :
-                                            <>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
-                                                <TableCell colSpan={2}></TableCell>
-                                                <TableCell>{matchHoliday['name']}</TableCell>
-                                            </>
-
-                                    }
-                                </TableRow>
-
-                            </>
-                        } else {
-                            return <>
-
-                                <TableRow key={i}>
-                                    <TableCell>{i + 1}</TableCell>
-                                    {
-                                        <>
-                                            <TableCell></TableCell>
-                                            <TableCell></TableCell>
-                                            <TableCell></TableCell>
-                                            <TableCell colSpan={2}></TableCell>
-                                            <TableCell></TableCell>
-                                        </>
-                                    }
-                                </TableRow>
-
-                            </>
-                        }
-
+                        return (
+                            <TableRow key={date.toString()}>
+                                <TableCell>{formatDate(date)}</TableCell>
+                                {!matchHoliday ? (
+                                    <>
+                                        <TableCell>{!weekend && timeStart}</TableCell>
+                                        <TableCell>{!weekend && timeEnd}</TableCell>
+                                        <TableCell>{!weekend && totalHours}</TableCell>
+                                        <TableCell colSpan={2}></TableCell>
+                                        <TableCell>{weekend && formatDayOfWeek(date)}</TableCell>
+                                    </>
+                                ) : (
+                                    <>
+                                        <TableCell></TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell></TableCell>
+                                        <TableCell colSpan={2}></TableCell>
+                                        <TableCell>{matchHoliday['name']}</TableCell>
+                                    </>
+                                )}
+                            </TableRow>
+                        );
                     })}
                 </TableBody>
             </Table>
